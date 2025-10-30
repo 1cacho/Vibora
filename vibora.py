@@ -2,6 +2,13 @@ from random import randrange, choice
 from turtle import *
 from freegames import vector
 
+# Lista de colores disponibles (excepto rojo)
+colors = ['blue', 'green', 'yellow', 'purple', 'orange']
+
+# Asignar colores aleatorios diferentes a la serpiente y comida
+snake_color = choice(colors)
+food_color = choice([color for color in colors if color != snake_color])
+
 def change(x, y):
     """Change snake direction."""
     aim.x = x
@@ -23,27 +30,6 @@ def square(x, y, size, color_name):
         left(90)
     end_fill()
 
-def move_food():
-    """Move food randomly one step at a time without going outside window."""
-    # Lista de posibles direcciones (arriba, abajo, izquierda, derecha)
-    directions = [(0, 10), (0, -10), (10, 0), (-10, 0)]
-    
-    # Filtrar direcciones que mantengan la comida dentro de los límites
-    valid_directions = []
-    
-    for dx, dy in directions:
-        new_x = food.x + dx
-        new_y = food.y + dy
-        # Verificar que la nueva posición esté dentro de los límites
-        if -200 < new_x < 190 and -200 < new_y < 190:
-            valid_directions.append((dx, dy))
-    
-    # Si hay direcciones válidas, elegir una al azar
-    if valid_directions:
-        dx, dy = choice(valid_directions)
-        food.x += dx
-        food.y += dy
-
 def move():
     """Move snake forward one segment."""
     head = snake[-1].copy()
@@ -63,16 +49,13 @@ def move():
         food.y = randrange(-15, 15) * 10
     else:
         snake.pop(0)
-    
-    # Mover la comida aleatoriamente en cada turno
-    move_food()
 
     clear()
 
     for body in snake:
-        square(body.x, body.y, 9, 'black')
+        square(body.x, body.y, 9, snake_color)  # Color aleatorio para la serpiente
 
-    square(food.x, food.y, 9, 'green')
+    square(food.x, food.y, 9, food_color)  # Color aleatorio diferente para la comida
     update()
     ontimer(move, 100)
 
