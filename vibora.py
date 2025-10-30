@@ -1,33 +1,48 @@
-"""Snake, classic arcade game.
-
-Exercises
-
-1. How do you make the snake faster or slower?
-2. How can you make the snake go around the edges?
-3. How would you move the food?
-4. Change the snake to respond to mouse clicks.
-"""
-
-from random import randrange
+from random import randrange, choice
 from turtle import *
-
-from freegames import square, vector
-
-food = vector(0, 0)
-snake = [vector(10, 0)]
-aim = vector(0, -10)
-
+from freegames import vector
 
 def change(x, y):
     """Change snake direction."""
     aim.x = x
     aim.y = y
 
-
 def inside(head):
     """Return True if head inside boundaries."""
     return -200 < head.x < 190 and -200 < head.y < 190
 
+def square(x, y, size, color_name):
+    """Draw square at position."""
+    up()
+    goto(x, y)
+    down()
+    color(color_name)
+    begin_fill()
+    for count in range(4):
+        forward(size)
+        left(90)
+    end_fill()
+
+def move_food():
+    """Move food randomly one step at a time without going outside window."""
+    # Lista de posibles direcciones (arriba, abajo, izquierda, derecha)
+    directions = [(0, 10), (0, -10), (10, 0), (-10, 0)]
+    
+    # Filtrar direcciones que mantengan la comida dentro de los límites
+    valid_directions = []
+    
+    for dx, dy in directions:
+        new_x = food.x + dx
+        new_y = food.y + dy
+        # Verificar que la nueva posición esté dentro de los límites
+        if -200 < new_x < 190 and -200 < new_y < 190:
+            valid_directions.append((dx, dy))
+    
+    # Si hay direcciones válidas, elegir una al azar
+    if valid_directions:
+        dx, dy = choice(valid_directions)
+        food.x += dx
+        food.y += dy
 
 def move():
     """Move snake forward one segment."""
@@ -43,10 +58,14 @@ def move():
 
     if head == food:
         print('Snake:', len(snake))
+        # Mover la comida a una nueva posición aleatoria
         food.x = randrange(-15, 15) * 10
         food.y = randrange(-15, 15) * 10
     else:
         snake.pop(0)
+    
+    # Mover la comida aleatoriamente en cada turno
+    move_food()
 
     clear()
 
@@ -57,6 +76,14 @@ def move():
     update()
     ontimer(move, 100)
 
+# Inicializar la comida
+food = vector(0, 0)
+food.x = randrange(-15, 15) * 10
+food.y = randrange(-15, 15) * 10
+
+# Inicializar la serpiente
+snake = [vector(10, 0)]
+aim = vector(0, -10)
 
 setup(420, 420, 370, 0)
 hideturtle()
